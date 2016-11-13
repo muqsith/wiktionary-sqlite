@@ -5,12 +5,12 @@ import zlib
 def test_data():
     conn = sqlite3.connect('enwiktionary.db')
     c = conn.cursor()
-    query = ''' SELECT * FROM enwiktionary where title like '%opt' '''
+    query = ''' SELECT * FROM enwiktionary where title like '%apple%' '''
     c.execute(query)
     l = c.fetchall()
     print(len(l))
     for t in l:
-        text = zlib.decompress(t[2])
+        text = zlib.decompress(t[1])
         print(str(text))
 
 def test_title():
