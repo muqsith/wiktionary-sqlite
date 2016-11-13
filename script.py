@@ -1,6 +1,7 @@
+#!/usr/bin/env python3.5
 import xml.parsers.expat
 from textprocessing import get_sections_text
-from sqlitedict import create_db, insert_values, close_db
+from sqlitedict import create_db, insert_values, create_index, close_db, commit
 import zlib
 
 inside_page = False
@@ -76,12 +77,17 @@ def end_element(element_name):
     if element_name == 'sha1' and inside_page:
         inside_sha1 = False
 
+def create_sqlite_db():
+    create_db()
+    p = xml.parsers.expat.ParserCreate()
+    p.StartElementHandler = start_element
+    p.CharacterDataHandler = char_data
+    p.EndElementHandler = end_element
+    with open('/home/muqsith/Development/datasets/en-wiktionary/enwiktionary-latest-pages-articles.xml','rb') as f:
+        p.ParseFile(f)
+    commit()
+    create_index()
+    close_db()
 
-create_db()
-p = xml.parsers.expat.ParserCreate()
-p.StartElementHandler = start_element
-p.CharacterDataHandler = char_data
-p.EndElementHandler = end_element
-with open('/home/muqsith/Development/datasets/en-wiktionary/enwiktionary-latest-pages-articles.xml','rb') as f:
-    p.ParseFile(f)
-close_db()
+if __name__ == "__main__":
+    create_sqlite_db()
